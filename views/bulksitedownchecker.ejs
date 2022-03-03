@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Agilysys Service URL validator</title>
+    <link
+      rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+    />
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+	<link href='https://fonts.googleapis.com/css?family=Roboto:400,100,300,700' rel='stylesheet' type='text/css'>
+
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+
+	<link rel="stylesheet" href="css/style.css">
+
+  </head>
+  <body>
+      <div class="container">
+          <h1 class="text-center">
+              Agilysys Health Checker
+          </h1>
+
+
+          <td><a href="#" class="btn btn-warning" onClick="refreshPage()">Refresh</a></td>
+<!--
+          <form id="form">
+            <div class="form-group">
+                <label for="domain">Enter Domains URL: (One Per Line)</label>
+                <textarea class="form-control" rows="10" cols="20" id="domains" placeholder="Domain names" required></textarea>
+            </div>
+            <div class="form-group">
+                <button id="button" class="btn btn-block btn-danger">
+                    Get Domains Status
+                </button>
+            </div>
+        </form>
+-->
+
+        <section class="ftco-section">
+      		<div class="container">
+
+      			<div class="row">
+      				<div class="col-md-12">
+      					<div class="table-wrap">
+      						<table class="table table-striped">
+      						  <thead>
+      						    <tr>
+                        <th>Service Name</th>
+                        <th>Service URL</th>
+                        <th>Service Status</th>
+                        <th>Active/Inactive</th>
+                        <th>Last Refresh</th>
+      						    </tr>
+      						  </thead>
+      						  <tbody id="body">
+
+
+
+      						  </tbody>
+      						</table>
+      					</div>
+      				</div>
+      			</div>
+      		</div>
+      	</section>
+
+
+
+        <br><br>
+      </div>
+</body>
+
+<script src="js/jquery.min.js"></script>
+<script src="js/popper.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script src="js/main.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/psl/1.8.0/psl.min.js"></script>
+  <script>
+      //$("#form").submit(function(e){
+
+        $(document).ready(function(e){
+          //e.preventDefault()
+
+          //var domains = $('#domains').val().split('\n');
+
+
+          var names=['PMS-InterfaceIntegration-Prod','PMS-InternalIntegration-Prod','PMS-Reservation-Prod','PMS-UI-Prod','PMS-RoomInventory-Prod','PMS-Group-Prod','PMS-Gateway-Prod','V1-Folio-Prod','PMS-Reports-Prod','V1-Task-Prod','V1-Images-Prod','Accounting-CD','SnC-Accounts-Prod'];
+
+          var domains=[
+            'https://v1-interfaceintegration-prod-westus.onagilysys.com/V1IntegrationService/HeartBeat',
+            'https://pms-internalintegration-prod-westus.onagilysys.com/V1InternalIntegrationService/HeartBeat',
+            'https://pms-reservation-prod-westus.onagilysys.com/V1ReservationService/HeartBeat',
+            'https://pms-ui-prod-westus.onagilysys.com/',
+            'https://pms-roominventory-prod-westus.onagilysys.com/V1RoomInventory/HeartBeat',
+            'https://pms-group-prod-westus.onagilysys.com/V1Group/HeartBeat',
+            'https://pms-gateway-prod-westus.onagilysys.com/PMSGateway/HeartBeat',
+            'https://v1-folio-prod-westus.rguest.com/FolioService/HeartBeat',
+            'https://pms-reports-prod-westus.onagilysys.com/VisualOne/ReportingService/HeartBeat',
+            'https://v1-task-prod-westus.rguest.com/TaskService/HeartBeat',
+            'https://v1-images-prod-westus.rguest.com/VisualOne/ImageService/HeartBeat',
+            'https://v1-accountingservice-prod-westus.onagilysys.com/V1Accounting/HeartBeat',
+            'https://snc-accounts-prod-westus.rguest.com/V1Account/HeartBeat'
+          ] ;
+          //console.log(domains)
+
+          domains.forEach((domain, index) => {
+  const name = names[index];
+          /*  var prefix = 'https://';
+
+if (domain.substr(0, prefix.length) !== prefix)
+{
+    domain = prefix + domain;
+} */
+
+            $.ajax({
+              method:"POST",
+              url:"/singledomainstatuschecker",
+              data:{domain:domain},
+              success:function(data){
+                  console.log(data.domainstatus)
+                  if(data.domainstatus.includes("200"))
+                  {
+                  $("#body").append(`
+                  <tr>
+                    <td>${name}</td>
+                     <td>${domain}</td>
+                     <td>${data.domainstatus}</td>
+                     <td><a href="#" class="btn btn-success">Active</a></td>
+                     <td>${data.refresh_time}</td>
+                  </tr>
+
+                  `)
+                }
+                else{
+
+                  $("#body").append(`
+                  <tr>
+                  <td>${name}</td>
+                     <td>${domain}</td>
+                     <td>${data.domainstatus}</td>
+                     <td><a href="#" class="btn btn-danger">Inactive</a></td>
+                     <td>${data.refresh_time}</td>
+                  </tr>
+
+                  `)
+                }
+              }
+          })
+
+          });
+
+
+
+      })
+
+
+      setTimeout(function(){
+   window.location.reload(1);
+}, 150000);
+
+
+function refreshPage(){
+    window.location.reload();
+}
+  </script>
+</html>
