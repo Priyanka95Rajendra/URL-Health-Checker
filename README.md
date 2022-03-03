@@ -19,3 +19,7 @@ Technology used is NodeJs , eJS, HTML, CSS.
     "request-to-curl": "^0.1.6",
     "simple-get": "^4.0.1"
   }
+
+Steps:
+
+Start NPM from the directory and server will be listening on Port 7000. 
